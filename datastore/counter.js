@@ -1,7 +1,6 @@
 const fs = require('fs');
 const path = require('path');
 const sprintf = require('sprintf-js').sprintf;
-const counterFile = require('./counterFile.txt');
 
 var counter = 0;
 
@@ -41,9 +40,24 @@ const writeCounter = (count, callback) => {
 
 // Public API - Fix this function //////////////////////////////////////////////
 
-exports.getNextUniqueId = () => {
+exports.getNextUniqueId = (callback) => {
   // invoke readCounter... and return the number
-  readCounter(callback);
+  readCounter((err, num) => {
+    if (err) {
+      throw ('could not read file');
+    } else {
+      writeCounter(num + 1, (err, counterString) => {
+        if (err) {
+          throw ('could not write counter');
+        } else {
+          callback(err, counterString);
+          return counterString;
+        }
+      });
+    }
+  });
+
+  /*
   // if the fileData is 0
   if (fileData === 0) {
     // invoke write=Counter
@@ -52,6 +66,7 @@ exports.getNextUniqueId = () => {
   // increment counterFile by 1
   counterFile++;
   return zeroPaddedNumber(counterFile);
+  */
 };
 
 
